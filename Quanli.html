@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhóm 5: Giải Pháp Quản Lý Chi Tiêu Cho Sinh Viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        /* Custom styles for chart containers as per requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Card hover effects */
+        .hover-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Active tab state */
+        .tab-active {
+            background-color: #00ccff; /* Indigo 600 */
+            color: white;
+            border-color: #00ff0d;
+        }
+        .tab-inactive {
+            background-color: white;
+            color: #39404b; /* Gray 600 */
+            border-color: #E5E7EB; /* Gray 200 */
+        }
+        .tab-inactive:hover {
+            background-color: #F3F4F6; /* Gray 100 */
+        }
+    </style>
+    <!-- Chosen Palette: Indigo/Slate/Emerald - Professional, academic, yet trustworthy and growth-oriented. -->
+    <!-- Application Structure Plan: 
+         1. Header & Intro: Hooks the user and sets the context.
+         2. Research Framework (The 4 Questions): Designed as an interactive grid where users explore the theoretical basis (Goal, Purpose, Object, Subject) without wall-of-text.
+         3. Current Reality (Analysis): Data visualization of common student spending issues to establish 'the problem'.
+         4. The Solution Engine (Core Interaction): An interactive budget calculator implementing the 'Content' of the research. Users input their own allowance and toggle between methods (50/30/20 vs 6 Jars) to see immediate visualizations of how to apply the research.
+         5. Actionable Tips: A conclusion section with practical advice.
+    -->
+    <!-- Visualization & Content Choices:
+         1. Framework Grid (HTML/CSS): Uses icons and hover states to present the 4 research questions clearly.
+         2. Spending Habits (Bar Chart): Visualizes survey data on *why* students run out of money. Goal: Inform/Context.
+         3. Budget Allocator (Doughnut Chart): The core interactive tool. Updates dynamically based on user input and selected methodology (50/30/20 or 6 Jars). Goal: Change/Apply.
+         4. Tips Grid (Cards): Quick, digestible advice. Goal: Inform.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-indigo-700">Nhóm<span class="text-slate-900"> 5</span></span>
+                </div>
+                <div class="hidden sm:flex space-x-8 items-center">
+                    
+
+                    <button onclick="scrollToSection('reality')" class="text-slate-600 hover:text-indigo-600 font-medium transition">ĐẠI HỌC PHẠM VĂN ĐỒNG</button>
+                    <button onclick="scrollToSection('solutions')" class="px-4 py-2 rounded-full bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition shadow-sm">Quản Lý Chi Tiêu</button>
+                </div>
+                <!-- Mobile Menu Button (Simplified) -->
+                <div class="flex items-center sm:hidden">
+                    <button onclick="scrollToSection('solutions')" class="text-indigo-600 font-bold">Bắt đầu</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-br from-indigo-50 to-white py-16 sm:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+                Giải Pháp Quản Lý Chi Tiêu <br class="hidden sm:block" />
+                <span class="text-indigo-600">Phù Hợp Cho Sinh Viên</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-lg text-slate-600 mb-10">
+                
+            </p>
+            <div class="flex justify-center gap-4">
+                <button onclick="scrollToSection('framework')" class="px-6 py-3 rounded-lg bg-white border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition shadow-sm">
+                    Tính toán nhanh
+                </button>
+                <button onclick="scrollToSection('solutions')" class="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">
+                    Tính Toán Ngân Sách Ngay
+                </button>
+            </div>
+        </div>
+    </header>
+
+
+
+    <!-- Section 3: The Solutions (Interactive Core) -->
+    <section id="solutions" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-indigo-600 font-bold tracking-wider uppercase text-sm">Nội Dung Trọng Tâm</span>
+                <h2 class="text-3xl font-bold text-slate-900 mt-2">CÔNG CỤ HOẠCH ĐỊNH NGÂN SÁCH</h2>
+                <p class="mt-4 text-slate-600 max-w-2xl mx-auto">
+                    Việc áp dụng các công thức tài chính đã được chứng minh. Hãy nhập thu nhập hàng tháng của bạn (trợ cấp + làm thêm) để thấy cách phân bổ tối ưu.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Controls -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Thu nhập hàng tháng (VNĐ)</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-slate-500 sm:text-sm">₫</span>
+                            </div>
+                            <input type="number" id="incomeInput" value="4000000" step="500000" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-8 pr-12 sm:text-lg border-gray-300 rounded-md py-3" placeholder="0">
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">Ví dụ: 3,000,000 hoặc 5,000,000</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                        <label class="block text-sm font-medium text-slate-700 mb-4">Chọn Phương Pháp Quản Lý</label>
+                        <div class="flex flex-col space-y-3">
+                            <button id="btn-503020" onclick="switchMethod('503020')" class="tab-active flex items-center justify-between px-4 py-3 border rounded-lg text-left shadow-sm transition">
+                                <div>
+                                    <span class="block font-bold">Quy tắc 50/30/20</span>
+                                    <span class="text-xs opacity-80">Cân bằng cơ bản, dễ áp dụng</span>
+                                </div>
+                                <span class="text-xl">⚖️</span>
+                            </button>
+                            <button id="btn-6jars" onclick="switchMethod('6jars')" class="tab-inactive flex items-center justify-between px-4 py-3 border rounded-lg text-left shadow-sm transition">
+                                <div>
+                                    <span class="block font-bold">Phương pháp 6 Chiếc Lọ</span>
+                                    <span class="text-xs opacity-80">Chi tiết, tập trung phát triển</span>
+                                </div>
+                                <span class="text-xl">🏺</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="method-description" class="bg-blue-50 p-6 rounded-xl border border-blue-100 text-blue-800 text-sm leading-relaxed">
+                        <!-- Dynamic description inserted here via JS -->
+                    </div>
+                </div>
+
+                <!-- Visualization -->
+                <div class="lg:col-span-5 flex flex-col items-center justify-center">
+                    <div class="chart-container">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Breakdown List -->
+                <div class="lg:col-span-3">
+                    <h3 class="font-bold text-slate-800 mb-4 border-b pb-2">Kế Hoạch Chi Tiết</h3>
+                    <div id="breakdown-list" class="space-y-3">
+                        <!-- Dynamic list items inserted here via JS -->
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-200">
+                        <div class="flex justify-between items-center text-slate-500 text-sm">
+                            <span>Tổng cộng:</span>
+                            <span id="total-display" class="font-mono">4,000,000 ₫</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Additional Tips (Content Extension) -->
+    <section class="py-16 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl font-bold text-center text-slate-900 mb-10">Lời Khuyên Thực Tiễn</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="text-3xl mb-4">🏠</div>
+                    <h3 class="font-bold text-slate-800 mb-2">Chi phí Cố định</h3>
+                    <p class="text-sm text-slate-600">Nên ở ghép để chia sẻ tiền phòng. Tự nấu ăn thay vì ăn ngoài có thể tiết kiệm tới 40% chi phí ăn uống.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="text-3xl mb-4">📚</div>
+                    <h3 class="font-bold text-slate-800 mb-2">Học tập & Sách</h3>
+                    <p class="text-sm text-slate-600">Sử dụng thư viện trường, mua sách cũ từ sinh viên khóa trên hoặc dùng E-book. Săn học bổng để giảm gánh nặng.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="text-3xl mb-4">🛍️</div>
+                    <h3 class="font-bold text-slate-800 mb-2">Quy tắc 24h</h3>
+                    <p class="text-sm text-slate-600">Khi muốn mua một món đồ ngoài kế hoạch, hãy đợi 24h. Nếu sau đó bạn vẫn thấy cần, hãy cân nhắc mua.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="opacity-75 mb-2">NHÓM 5</p>
+            <p class="font-bold text-lg"> Giải pháp quản lý chi tiêu phù hợp cho sinh viên</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- State Management ---
+        const state = {
+            income: 4000000,
+            method: '503020', // '503020' or '6jars'
+            chartInstance: null
+        };
+
+        // --- Data Definitions ---
+        const methodsData = {
+            '503020': {
+                name: "Quy tắc 50/30/20",
+                desc: "Phương pháp này chia thu nhập thành 3 nhóm chính. Thích hợp cho người mới bắt đầu hoặc người muốn sự đơn giản.",
+                categories: [
+                    { id: 'needs', label: 'Thiết yếu (Nhu cầu)', percent: 50, color: '#6366f1', hint: 'Tiền nhà, ăn uống, điện nước, đi lại' },
+                    { id: 'wants', label: 'Mong muốn (Sở thích)', percent: 30, color: '#f43f5e', hint: 'Mua sắm, cà phê, xem phim' },
+                    { id: 'savings', label: 'Tiết kiệm / Nợ', percent: 20, color: '#10b981', hint: 'Quỹ dự phòng, trả nợ, đầu tư' }
+                ]
+            },
+            '6jars': {
+                name: "Phương pháp 6 Chiếc Lọ (JARS)",
+                desc: "Phương pháp T. Harv Eker nổi tiếng, chia nhỏ thu nhập để đảm bảo phát triển toàn diện, bao gồm cả giáo dục và cho đi.",
+                categories: [
+                    { id: 'nec', label: 'Thiết yếu (NEC)', percent: 55, color: '#6366f1', hint: 'Chi phí sinh hoạt hàng ngày' },
+                    { id: 'lts', label: 'Tiết kiệm dài hạn (LTSS)', percent: 10, color: '#10b981', hint: 'Mua xe, nhà, đám cưới' },
+                    { id: 'edu', label: 'Giáo dục (EDU)', percent: 10, color: '#3b82f6', hint: 'Sách, khóa học, kỹ năng' },
+                    { id: 'play', label: 'Hưởng thụ (PLAY)', percent: 10, color: '#f43f5e', hint: 'Tự thưởng bản thân' },
+                    { id: 'ffa', label: 'Tự do tài chính (FFA)', percent: 10, color: '#f59e0b', hint: 'Đầu tư sinh lời' },
+                    { id: 'give', label: 'Cho đi (GIVE)', percent: 5, color: '#8b5cf6', hint: 'Từ thiện, quà tặng' }
+                ]
+            }
+        };
+
+        // --- Core Functions ---
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function switchMethod(methodId) {
+            state.method = methodId;
+            
+            // Update UI Buttons
+            const btn50 = document.getElementById('btn-503020');
+            const btn6 = document.getElementById('btn-6jars');
+            
+            if (methodId === '503020') {
+                btn50.className = btn50.className.replace('tab-inactive', 'tab-active');
+                btn6.className = btn6.className.replace('tab-active', 'tab-inactive');
+            } else {
+                btn6.className = btn6.className.replace('tab-inactive', 'tab-active');
+                btn50.className = btn50.className.replace('tab-active', 'tab-inactive');
+            }
+
+            updateCalculation();
+        }
+
+        function updateCalculation() {
+            const currentMethod = methodsData[state.method];
+            const income = state.income;
+
+            // Update Description
+            document.getElementById('method-description').innerHTML = `<strong>${currentMethod.name}:</strong> ${currentMethod.desc}`;
+            
+            // Update Total Display
+            document.getElementById('total-display').innerText = formatCurrency(income);
+
+            // Calculate Values
+            const chartLabels = [];
+            const chartData = [];
+            const chartColors = [];
+            
+            // Clear Breakdown List
+            const listEl = document.getElementById('breakdown-list');
+            listEl.innerHTML = '';
+
+            currentMethod.categories.forEach(cat => {
+                const amount = income * (cat.percent / 100);
+                
+                // For Chart
+                chartLabels.push(cat.label);
+                chartData.push(amount);
+                chartColors.push(cat.color);
+
+                // For List
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center p-3 rounded bg-slate-50 border-l-4 hover:bg-slate-100 transition';
+                item.style.borderLeftColor = cat.color;
+                item.innerHTML = `
+                    <div>
+                        <div class="font-medium text-slate-800">${cat.label} <span class="text-xs text-slate-500">(${cat.percent}%)</span></div>
+                        <div class="text-xs text-slate-500">${cat.hint}</div>
+                    </div>
+                    <div class="font-bold text-slate-700 font-mono">${formatCurrency(amount)}</div>
+                `;
+                listEl.appendChild(item);
+            });
+
+            updateChart(chartLabels, chartData, chartColors);
+        }
+
+        // --- Chart Initialization & Updates ---
+
+        function initRealityChart() {
+            const ctx = document.getElementById('realityChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mua sắm ngẫu hứng', 'Ăn uống/Tụ tập', 'Không có kế hoạch', 'Chi phí phát sinh', 'Đầu tư sai cách'],
+                    datasets: [{
+                        label: '% Sinh viên mắc phải',
+                        data: [75, 65, 60, 45, 15],
+                        backgroundColor: [
+                            'rgba(244, 63, 94, 0.7)',
+                            'rgba(249, 115, 22, 0.7)',
+                            'rgba(99, 102, 241, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(139, 92, 246, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(244, 63, 94)',
+                            'rgb(249, 115, 22)',
+                            'rgb(99, 102, 241)',
+                            'rgb(16, 185, 129)',
+                            'rgb(139, 92, 246)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.raw + '% sinh viên gặp vấn đề này';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Tỷ lệ (%)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart(labels, data, colors) {
+            if (state.chartInstance) {
+                state.chartInstance.destroy();
+            }
+
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            state.chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        hoverOffset: 10,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: 20
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+
+        // --- Event Listeners & Initialization ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Input Listener
+            const incomeInput = document.getElementById('incomeInput');
+            incomeInput.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                if (!isNaN(val) && val > 0) {
+                    state.income = val;
+                    updateCalculation();
+                }
+            });
+
+            // Initial Renders
+            initRealityChart();
+            updateCalculation();
+        });
+
+    </script>
+</body>
+</html>
